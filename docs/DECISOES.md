@@ -35,3 +35,16 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 20. **Token opcional:** se `PERFECTPAY_TOKEN` estiver definido, o campo `token` do payload (ou o cabeçalho `x-perfectpay-token`) precisa ser igual a ele.
 21. **Processamento logo depois da resposta** (`after()` do Next.js). Eventos que ficarem como “recebido” por mais de 2 minutos são processados pelo dispatcher, e qualquer evento pode ser reprocessado pelo painel (o adaptador roda de novo sobre o payload bruto).
 22. **Limite de requisições:** 600 por minuto por IP no webhook, e tentativas com segredo errado são contadas à parte.
+
+## Motor de decisão
+
+23. **“1 e-mail de recuperação por dia”** conta pelo dia do calendário no fuso do cliente (não 24 h corridas). Assim A1 (30 min) e A2 (24 h) caem em dias diferentes sem empurrar o A2. Isso vale no agendamento e de novo na guarda de envio. Quem estoura o limite vai para as 8h do dia seguinte. Consequência: se o A1 já saiu hoje e o cartão é recusado depois, o B1 vai para as 8h de amanhã, porque a regra do limite manda.
+24. **30 dias para reentrar** contam a partir da última atividade do fluxo anterior (o que for mais tarde entre o início e o fim). É a leitura mais restritiva.
+25. **Atraso antes da janela de silêncio:** na guarda, o teste de atraso (regra 7) roda antes da janela de 22h–7h e do limite diário (regra 6). Assim, um e-mail muito atrasado expira em vez de ser só adiado. Para os outros casos a ordem não muda nada.
+26. **E-mails “simulados” contam como entregues** para atribuição, limite diário e “já recebeu o F3”, para o simulador se comportar igual à produção.
+27. **Upsell com oferta já comprada:** o e-mail é criado já como “pulado” (motivo “já comprou a oferta”), para aparecer na jornada. Se as 3 ofertas já foram compradas, o fluxo nasce completo.
+28. **Compra do principal de cliente suprimido:** a compra é registrada, mas não cria fluxo de upsell. Para enviar de novo, reative o cliente no painel.
+29. **Mesma transação aprovada duas vezes** (ex.: status “aprovada” e depois “completa”): a segunda é ignorada.
+30. **Grupo de controle:** quem cai no grupo ganha um fluxo marcado como “controle”, já concluído e sem e-mails. Ele conta para a regra dos 30 dias e para os relatórios. A escolha usa um hash do evento.
+31. **Concorrência:** o processamento trava a linha do cliente (`FOR UPDATE`). Índices únicos garantem no máximo um fluxo de upsell por cliente e um fluxo de recuperação ativo.
+32. **Recusa com Fluxo A ativo:** o Fluxo A é cancelado (“substituído pelo Fluxo B”) e não conta para a regra dos 30 dias do novo Fluxo B.
