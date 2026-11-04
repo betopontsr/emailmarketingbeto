@@ -48,3 +48,22 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 30. **Grupo de controle:** quem cai no grupo ganha um fluxo marcado como “controle”, já concluído e sem e-mails. Ele conta para a regra dos 30 dias e para os relatórios. A escolha usa um hash do evento.
 31. **Concorrência:** o processamento trava a linha do cliente (`FOR UPDATE`). Índices únicos garantem no máximo um fluxo de upsell por cliente e um fluxo de recuperação ativo.
 32. **Recusa com Fluxo A ativo:** o Fluxo A é cancelado (“substituído pelo Fluxo B”) e não conta para a regra dos 30 dias do novo Fluxo B.
+
+## Envio, templates e Resend
+
+33. **Clientes de teste (`is_test`) nunca recebem e-mail de verdade**, nem com a simulação desligada. Eles servem para o Simulador. O “enviar teste para mim” da prévia é um caminho separado.
+34. **Atribuição de texto entre colchetes** nos anexos: “[Name, with permission]” vira “— Nome” no fim do depoimento; “[DATE, TIME, TIME ZONE]” e “After [DATE]” viram o mesmo prazo completo (“Friday, Nov 20 at 10:00 AM EST”). Usei data e hora também no “After [DATE]” porque o link expira na hora exata, não no fim do dia.
+35. **Depoimentos do upsell_4:** o bloco só entra com os dois depoimentos autorizados e com nome, porque a frase de abertura diz “two students”. Com só um autorizado, o bloco inteiro fica de fora.
+36. **Contato de suporte no rec_a2:** com WhatsApp, “write to us at {e-mail} or on WhatsApp”; sem WhatsApp, “write to us at {e-mail}”. No rec_b1, sem WhatsApp, fica só “reply to this email”.
+37. **Rodapé:** “Unsubscribe” (link para a página /u/[token]) e o endereço postal. O texto do rodapé não está nos anexos, então usei o mínimo.
+38. **Descadastro:** a página /u/[token] pede confirmação por botão. Isso evita que robôs de segurança, que abrem links, descadastrem a pessoa sem querer. O cabeçalho `List-Unsubscribe-Post` faz o descadastro em um clique direto pela API.
+39. **Tentativas:** 3 no total (espera de 1 min e depois 5 min). Erros permanentes do Resend (validação, chave inválida) viram “failed” na hora. A chave de idempotência é `scheduled-email/<id>` e se mantém igual nas novas tentativas.
+40. **Bounce:** suprime quando `bounce.type` contém “Permanent”. `email.suppressed` (o Resend recusou porque o endereço está na lista de supressão dele) também suprime.
+41. **Simulador, “tornar os pendentes vencidos agora”:** em vez de puxar todos os e-mails para agora (o que bateria no limite de 1 por dia e quebraria o teste), o botão desloca para trás a história inteira do cliente de teste até o próximo e-mail vencer, e então envia (simulado). A cada clique a jornada avança um passo, com todas as regras valendo.
+42. **Vercel Cron:** o `vercel.json` agenda a cada minuto, como pedido. No plano Hobby isso pode ser recusado. Nesse caso, troque para `0 12 * * *` e use o cron-job.org a cada minuto (veja o README).
+
+## Pontos de texto para você revisar (não alterei)
+
+43. **rec_a1 diz “A few minutes ago”.** Se o abandono acontecer à noite, a janela de silêncio adia o e-mail para as 8h e a frase fica imprecisa.
+44. **rec_b2 diz “Yesterday”.** Na recusa por saldo, ele sai 48 h depois, e “Yesterday” fica impreciso.
+45. **upsell_5 diz “Until tonight at midnight”.** O link de $19 precisa expirar mesmo. O app só escreve a sigla do fuso do cliente.
