@@ -1,0 +1,22 @@
+{
+  "token": "tok_teste",
+  "code": "PPCPMTB5BMTEST1",
+  "sale_amount": 47,
+  "currency_enum": 1,
+  "payment_method_enum": 4,
+  "sale_status_enum": 2,
+  "sale_status_detail": "approved",
+  "date_created": "2026-11-04 10:00:00",
+  "date_approved": "2026-11-04 10:00:05",
+  "product": { "code": "PPPBTESTE01", "name": "The 11:22 Abundance Sequence" },
+  "plan": { "code": "PPU38CQFMQH", "name": "11:22 $47", "quantity": 1 },
+  "customer": {
+    "full_name": "JOHN SMITH",
+    "email": "John.Smith@Example.com",
+    "phone_area_code": "212",
+    "phone_number": "5550100",
+    "country": "US",
+    "state": "CA",
+    "city": "Los Angeles"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "code": "PPCPMTB5BMTEST5",
+  "sale_status_enum": 2,
+  "date_approved": "2026-11-04 10:00:05",
+  "card_number": "4111111111111111",
+  "cvv": "123",
+  "notes": "4111 1111 1111 1111",
+  "product": { "code": "OUTRO" },
+  "customer": { "email": "x@example.com", "identification_number": "12345678909" }
+}

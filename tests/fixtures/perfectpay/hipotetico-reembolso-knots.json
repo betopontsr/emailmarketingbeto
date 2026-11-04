@@ -1,0 +1,11 @@
+{
+  "token": "tok_teste",
+  "code": "PPCPMTB5BMTEST4",
+  "sale_amount": 19,
+  "sale_status_enum": 7,
+  "sale_status_detail": "refunded",
+  "date_created": "2026-11-05 09:00:00",
+  "product": { "code": "PPPBTESTE02", "name": "The Five Knots of the Body" },
+  "plan": { "code": "PPU38CQFMS2" },
+  "customer": { "full_name": "John Smith", "email": "john.smith@example.com", "country": "US" }
+}

@@ -20,3 +20,18 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 8. **Pausa global:** enquanto estiver ligada, o dispatcher não processa nada e os e-mails continuam na fila. Se a pausa passar de `MAX_LATENESS_HORAS`, eles expiram quando a pausa acabar (regra 7). Assim a pausa para tudo sem perder o histórico.
 9. **Configuração incompleta** (remetente, reply-to, endereço postal, e-mail de suporte, RESEND_API_KEY): o envio real não roda e aparece um alerta. A simulação continua funcionando.
 10. **Configurações:** um valor salvo no painel tem prioridade sobre a variável de ambiente. A variável é o valor padrão.
+
+## Webhook da Perfect Pay
+
+11. **Nomes de campo são hipóteses.** Sem payloads reais e sem acesso à documentação, o adaptador (`src/lib/perfectpay/adapter.ts`) usa o formato público que eu conhecia do postback da Perfect Pay (`sale_status_enum`, `sale_status_detail`, `code`, `customer.email`, `product.code`, `plan.code`, `date_approved`...). Os fixtures em `tests/fixtures/perfectpay/` se chamam `hipotetico-*`. **Confirme com payloads reais antes de desligar a simulação.** Qualquer evento que não bata com o esperado vira “não reconhecido” e não dispara nada.
+12. **Mapa de status (hipótese):** 1 → aguardando; 2 e 10 → aprovada; 5 → recusada; 6, 12 e 13 → abandono; 7 → reembolso; 9 → chargeback; o resto → “outro”. “Saldo insuficiente” é detectado no texto de `sale_status_detail` (insufficient / saldo / funds).
+13. **Datas sem fuso** (“2026-11-04 10:00:00”) são tratadas como horário de São Paulo, porque a Perfect Pay é brasileira. A confirmar.
+14. **Moeda:** só uso um código de 3 letras se vier. O `currency_enum` numérico não é interpretado.
+15. **Evento repetido:** o primeiro fica com índice único (provider, chave). As repetições também são gravadas, como “duplicado”, sem nenhum efeito, para auditoria.
+16. **Sem ID de evento:** a chave é `transactionId + status + data`. Sem transactionId, é um hash de e-mail + produto + status + data.
+17. **Produto ambíguo** (bate com mais de uma chave): tratado como não mapeado, sem disparo.
+18. **Eventos de produto não mapeado** não criam cliente. Ficam só na lista de eventos.
+19. **Fuso do cliente:** o webhook não traz fuso. Para clientes dos EUA uso o fuso principal do estado (`src/lib/util/zones.ts`). Isso evita, por exemplo, mandar e-mail às 5h para a Califórnia. Sem estado, ou fora dos EUA, uso America/New_York.
+20. **Token opcional:** se `PERFECTPAY_TOKEN` estiver definido, o campo `token` do payload (ou o cabeçalho `x-perfectpay-token`) precisa ser igual a ele.
+21. **Processamento logo depois da resposta** (`after()` do Next.js). Eventos que ficarem como “recebido” por mais de 2 minutos são processados pelo dispatcher, e qualquer evento pode ser reprocessado pelo painel (o adaptador roda de novo sobre o payload bruto).
+22. **Limite de requisições:** 600 por minuto por IP no webhook, e tentativas com segredo errado são contadas à parte.

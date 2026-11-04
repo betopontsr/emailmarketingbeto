@@ -1,0 +1,11 @@
+{
+  "token": "tok_teste",
+  "code": "PPCPMTB5BMTEST3",
+  "sale_amount": 47,
+  "sale_status_enum": 5,
+  "sale_status_detail": "cc_rejected_insufficient_amount",
+  "date_created": "2026-11-04 10:00:00",
+  "product": { "code": "PPPBTESTE01", "name": "The 11:22 Abundance Sequence" },
+  "plan": { "code": "PPU38CQFMQH" },
+  "customer": { "full_name": "Ann Lee", "email": "ann@example.com", "country": "US" }
+}
