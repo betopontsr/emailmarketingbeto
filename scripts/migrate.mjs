@@ -5,7 +5,8 @@ import pg from "pg";
 
 const url = process.env.DATABASE_URL;
 if (!url) {
-  console.error("DATABASE_URL não configurada");
+  console.error("DATABASE_URL não configurada.");
+  console.error("Na Vercel: abra o projeto → Storage → crie/conecte um banco Neon (Postgres) a todos os ambientes → faça Redeploy.");
   process.exit(1);
 }
 const pool = new pg.Pool({ connectionString: url, max: 1 });
