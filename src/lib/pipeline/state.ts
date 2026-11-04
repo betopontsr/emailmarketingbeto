@@ -19,11 +19,10 @@ export function engineConfig(s: Settings): EngineConfig {
 
 /** Monta o retrato do cliente que o motor precisa. */
 export async function loadCustomerState(db: DbOrTx, customer: Customer, s: Settings): Promise<CustomerState> {
-  const [fl, em, pu] = await Promise.all([
-    db.select().from(flows).where(eq(flows.customerId, customer.id)),
-    db.select().from(scheduledEmails).where(eq(scheduledEmails.customerId, customer.id)),
-    db.select().from(purchases).where(eq(purchases.customerId, customer.id)),
-  ]);
+  // Em sequência: dentro de uma transação a conexão é uma só.
+  const fl = await db.select().from(flows).where(eq(flows.customerId, customer.id));
+  const em = await db.select().from(scheduledEmails).where(eq(scheduledEmails.customerId, customer.id));
+  const pu = await db.select().from(purchases).where(eq(purchases.customerId, customer.id));
   const flowType = new Map(fl.map((f) => [f.id, f.type as FlowType]));
   return {
     customerId: customer.id,

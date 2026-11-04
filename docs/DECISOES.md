@@ -67,3 +67,14 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 43. **rec_a1 diz “A few minutes ago”.** Se o abandono acontecer à noite, a janela de silêncio adia o e-mail para as 8h e a frase fica imprecisa.
 44. **rec_b2 diz “Yesterday”.** Na recusa por saldo, ele sai 48 h depois, e “Yesterday” fica impreciso.
 45. **upsell_5 diz “Until tonight at midnight”.** O link de $19 precisa expirar mesmo. O app só escreve a sigla do fuso do cliente.
+
+## Painel e simulador
+
+46. **Fuso do painel:** datas exibidas no horário de São Paulo. Na jornada, aparece também o horário do cliente.
+47. **Jornada:** “viu o e-mail N” quando há abertura registrada; “recebeu o e-mail N” quando foi entregue ou simulado sem abertura; “comprou X após o e-mail N” pela atribuição.
+48. **“Enviar agora”** no detalhe do cliente só aparece em simulação (ou para cliente de teste) e passa pela guarda de envio normal.
+49. **“Reenviar”** na fila (falhos e expirados) recoloca o e-mail para agora e passa pela guarda de novo. Se o fluxo tinha sido encerrado só porque esse era o último e-mail, ele é reaberto.
+50. **Reativar um cliente** tira a supressão, mas não recria fluxos já encerrados.
+51. **CSV:** células que começam com `=`, `+`, `-` ou `@` ganham um apóstrofo, para não virarem fórmula no Excel ou no Sheets.
+52. **Apagar dados de teste** remove só clientes `is_test` e os eventos do simulador. Nunca toca em clientes reais.
+53. **Fuso pelo estado** passou a ser deduzido no cadastro do cliente (vale para webhook e simulador), não só no adaptador.

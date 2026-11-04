@@ -7,6 +7,7 @@ import { resolveProduct } from "@/lib/products/resolve";
 import { sha256 } from "@/lib/util/crypto";
 import { properCase } from "@/lib/util/names";
 import { isValidZone } from "@/lib/util/time";
+import { zoneFromLocation } from "@/lib/util/zones";
 
 export type Provider = "perfectpay" | "simulator";
 
@@ -95,8 +96,9 @@ export async function upsertCustomer(db: DbOrTx, e: NormalizedEvent, isTest: boo
     ...(c.country ? { country: c.country } : {}),
     ...(c.region ? { region: c.region } : {}),
     ...(c.phone ? { phone: c.phone } : {}),
-    ...(isValidZone(c.timezone) ? { timezone: c.timezone } : {}),
   };
+  const zone = isValidZone(c.timezone) ? c.timezone : zoneFromLocation(c.country, c.region);
+  if (zone) Object.assign(patch, { timezone: zone });
   const [row] = await db
     .insert(customers)
     .values({ email: c.email, isTest, ...patch })

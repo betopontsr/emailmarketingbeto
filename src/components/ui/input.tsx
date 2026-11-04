@@ -32,5 +32,5 @@ export function Select({ className, ...p }: React.ComponentProps<"select">) {
   );
 }
 export function Label({ className, ...p }: React.ComponentProps<"label">) {
-  return <label className={cn("text-xs font-medium text-muted-foreground", className)} {...p} />;
+  return <label className={cn("block text-xs font-medium text-muted-foreground", className)} {...p} />;
 }

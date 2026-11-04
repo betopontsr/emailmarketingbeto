@@ -11,7 +11,7 @@ export function LoginForm() {
     <form action={action} className="space-y-3">
       <div className="space-y-1">
         <Label htmlFor="email">E-mail</Label>
-        <Input id="email" name="email" type="email" autoComplete="username" required />
+        <Input id="email" name="email" type="email" autoComplete="username" required defaultValue={state.email} key={state.email} />
       </div>
       <div className="space-y-1">
         <Label htmlFor="password">Senha</Label>

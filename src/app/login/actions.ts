@@ -11,11 +11,12 @@ import { clientIp, rateLimit, resetRateLimit } from "@/lib/util/rate-limit";
 
 const form = z.object({ email: z.string().trim().toLowerCase().email(), password: z.string().min(1).max(200) });
 
-export type LoginState = { error?: string };
+export type LoginState = { error?: string; email?: string };
 
 export async function loginAction(_prev: LoginState, fd: FormData): Promise<LoginState> {
   const parsed = form.safeParse({ email: fd.get("email"), password: fd.get("password") });
-  if (!parsed.success) return { error: "Preencha e-mail e senha." };
+  const typed = String(fd.get("email") ?? "").slice(0, 200);
+  if (!parsed.success) return { error: "Preencha e-mail e senha.", email: typed };
 
   const e = env();
   if (!e.ADMIN_EMAIL || !e.ADMIN_PASSWORD_HASH || !e.SESSION_SECRET) {
@@ -27,12 +28,12 @@ export async function loginAction(_prev: LoginState, fd: FormData): Promise<Logi
   const key = `login:${ip}`;
   // 5 tentativas a cada 15 minutos por IP
   if (!(await rateLimit(db, key, 5, 15 * 60))) {
-    return { error: "Muitas tentativas. Aguarde 15 minutos e tente de novo." };
+    return { error: "Muitas tentativas. Aguarde 15 minutos e tente de novo.", email: typed };
   }
 
   const emailOk = parsed.data.email === e.ADMIN_EMAIL.toLowerCase();
   const passOk = await bcrypt.compare(parsed.data.password, e.ADMIN_PASSWORD_HASH);
-  if (!emailOk || !passOk) return { error: "E-mail ou senha incorretos." };
+  if (!emailOk || !passOk) return { error: "E-mail ou senha incorretos.", email: typed };
 
   await resetRateLimit(db, key);
   const jar = await cookies();
