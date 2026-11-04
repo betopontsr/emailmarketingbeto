@@ -64,13 +64,13 @@ Os campos de remetente, contato, endereço e trechos opcionais também podem ser
 4. **Variáveis:** em **Settings → Environment Variables**, cadastre as variáveis da tabela acima (com `DRY_RUN=true`).
 5. **Deploy.** No log do build deve aparecer “Migrations aplicadas.”
 6. Abra `https://SEU-APP/login` e entre com `ADMIN_EMAIL` e a sua senha.
-7. **Cron a cada minuto.** Escolha uma das opções:
-   - **Plano Pro:** o `vercel.json` já agenda `/api/cron/dispatch` a cada minuto (`* * * * *`). A Vercel manda `Authorization: Bearer <CRON_SECRET>` sozinha. Confira em **Settings → Cron Jobs**.
-   - **Plano Hobby:** o Hobby só permite cron uma vez por dia, e o deploy pode ser recusado com `* * * * *`. Troque o `schedule` no `vercel.json` para `0 12 * * *` (fica como reserva) e crie um job grátis no **cron-job.org**:
-     - URL: `https://SEU-APP/api/cron/dispatch?key=SEU_CRON_SECRET` (ou, melhor, o cabeçalho `Authorization: Bearer SEU_CRON_SECRET` em “Advanced → Headers”)
+7. **Cron a cada minuto.** O plano Hobby da Vercel só aceita cron uma vez por dia. Por isso o `vercel.json` vem com `0 12 * * *` (uma vez por dia, ao meio-dia UTC), que serve só de reserva. O agendador de verdade é externo:
+   - Crie uma conta grátis no **cron-job.org** e um job novo:
+     - URL: `https://SEU-APP/api/cron/dispatch`
+     - Em “Advanced → Headers”, adicione `Authorization` com o valor `Bearer SEU_CRON_SECRET` (ou use a URL `https://SEU-APP/api/cron/dispatch?key=SEU_CRON_SECRET`)
      - Frequência: a cada 1 minuto
-     - Método: GET (POST também funciona)
-   - Confira os limites atuais do seu plano na documentação da Vercel (*Cron Jobs → Usage & Pricing*).
+     - Método: GET
+   - **Se um dia passar para o plano Pro**, pode trocar o `schedule` no `vercel.json` para `* * * * *` e desligar o job do cron-job.org. A Vercel manda `Authorization: Bearer <CRON_SECRET>` sozinha.
 8. Para testar o dispatcher na mão:
 
 ```bash

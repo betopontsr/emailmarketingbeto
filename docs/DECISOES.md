@@ -60,7 +60,7 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 39. **Tentativas:** 3 no total (espera de 1 min e depois 5 min). Erros permanentes do Resend (validação, chave inválida) viram “failed” na hora. A chave de idempotência é `scheduled-email/<id>` e se mantém igual nas novas tentativas.
 40. **Bounce:** suprime quando `bounce.type` contém “Permanent”. `email.suppressed` (o Resend recusou porque o endereço está na lista de supressão dele) também suprime.
 41. **Simulador, “tornar os pendentes vencidos agora”:** em vez de puxar todos os e-mails para agora (o que bateria no limite de 1 por dia e quebraria o teste), o botão desloca para trás a história inteira do cliente de teste até o próximo e-mail vencer, e então envia (simulado). A cada clique a jornada avança um passo, com todas as regras valendo.
-42. **Vercel Cron:** o `vercel.json` agenda a cada minuto, como pedido. No plano Hobby isso pode ser recusado. Nesse caso, troque para `0 12 * * *` e use o cron-job.org a cada minuto (veja o README).
+42. **Vercel Cron:** o plano Hobby recusou o deploy com `* * * * *` (“Hobby accounts are limited to daily cron jobs”). O `vercel.json` agora usa `0 12 * * *` (uma vez por dia, só de reserva), e o envio a cada minuto fica com o cron-job.org (veja o README). No plano Pro, dá para voltar a `* * * * *`.
 
 ## Pontos de texto para você revisar (não alterei)
 
