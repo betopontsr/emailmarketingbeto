@@ -1,4 +1,6 @@
 # Fontes (anexos do prompt)
 
+Cópias sem alteração dos anexos. São a fonte da verdade de textos, assuntos, previews, links, horários e regras dos e-mails.
+
+- `Upsells (quem comprou).md` — recebido em 04/11/2026.
 - `Recuperacao (quem nao comprou).md` — recebido em 04/11/2026.
-- `Upsells (quem comprou).md` — **FALTANDO.** Os dois arquivos anexados ao prompt eram cópias idênticas do arquivo de Recuperação. O arquivo de Upsells precisa ser enviado antes de implementar os templates upsell_1 a upsell_7.
