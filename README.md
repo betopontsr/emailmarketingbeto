@@ -32,7 +32,8 @@ O app nasce em **simulação** (DRY_RUN): nada é enviado de verdade e os e-mail
 | `PERFECTPAY_TOKEN` | Opcional. Token que a Perfect Pay manda no payload (`token`) | Copie da Perfect Pay, se ela mostrar um token de webhook. Vazio = não valida. |
 | `CRON_SECRET` | Protege `/api/cron/dispatch` | Valor aleatório. A Vercel o envia sozinha no cron. |
 | `ADMIN_EMAIL` | Seu login do painel | Seu e-mail. |
-| `ADMIN_PASSWORD_HASH` | Hash da sua senha | `npm run hash-password -- 'sua senha forte'` |
+| `ADMIN_PASSWORD` | Sua senha do painel (opção simples) | Uma senha forte, com 12 caracteres ou mais. |
+| `ADMIN_PASSWORD_HASH` | Opcional, avançado: hash bcrypt da senha (se existir, vale no lugar da `ADMIN_PASSWORD`) | `npm run hash-password -- 'sua senha forte'` |
 | `SESSION_SECRET` | Assina o cookie de login e os links de descadastro | Valor aleatório longo. **Não troque depois de enviar e-mails**, senão os links de descadastro antigos param de funcionar. |
 | `EMAIL_FROM_NAME` | Nome do remetente | `Nathan Miller` |
 | `EMAIL_FROM_ADDRESS` | E-mail do remetente | Endereço do domínio verificado no Resend, ex.: `nathan@seudominio.com`. |

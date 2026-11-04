@@ -14,6 +14,7 @@ const schema = z.object({
   CRON_SECRET: z.string().optional(),
   ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD_HASH: z.string().optional(),
+  ADMIN_PASSWORD: z.string().optional(),
   SESSION_SECRET: z.string().optional(),
   EMAIL_FROM_NAME: z.string().optional(),
   EMAIL_FROM_ADDRESS: z.string().optional(),

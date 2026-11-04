@@ -8,6 +8,7 @@ import { getDb } from "@/lib/db";
 import { env } from "@/lib/env";
 import { SESSION_COOKIE, SESSION_TTL_SECONDS, createSessionToken } from "@/lib/auth/session";
 import { clientIp, rateLimit, resetRateLimit } from "@/lib/util/rate-limit";
+import { safeEqual } from "@/lib/util/crypto";
 
 const form = z.object({ email: z.string().trim().toLowerCase().email(), password: z.string().min(1).max(200) });
 
@@ -19,8 +20,8 @@ export async function loginAction(_prev: LoginState, fd: FormData): Promise<Logi
   if (!parsed.success) return { error: "Preencha e-mail e senha.", email: typed };
 
   const e = env();
-  if (!e.ADMIN_EMAIL || !e.ADMIN_PASSWORD_HASH || !e.SESSION_SECRET) {
-    return { error: "Login não configurado: defina ADMIN_EMAIL, ADMIN_PASSWORD_HASH e SESSION_SECRET." };
+  if (!e.ADMIN_EMAIL || !(e.ADMIN_PASSWORD_HASH || e.ADMIN_PASSWORD) || !e.SESSION_SECRET) {
+    return { error: "Login não configurado: defina ADMIN_EMAIL, ADMIN_PASSWORD (ou ADMIN_PASSWORD_HASH) e SESSION_SECRET." };
   }
 
   const db = getDb();
@@ -32,7 +33,10 @@ export async function loginAction(_prev: LoginState, fd: FormData): Promise<Logi
   }
 
   const emailOk = parsed.data.email === e.ADMIN_EMAIL.toLowerCase();
-  const passOk = await bcrypt.compare(parsed.data.password, e.ADMIN_PASSWORD_HASH);
+  // ADMIN_PASSWORD_HASH (bcrypt) tem prioridade; ADMIN_PASSWORD (texto) é a opção simples.
+  const passOk = e.ADMIN_PASSWORD_HASH
+    ? await bcrypt.compare(parsed.data.password, e.ADMIN_PASSWORD_HASH)
+    : safeEqual(parsed.data.password, e.ADMIN_PASSWORD ?? "");
   if (!emailOk || !passOk) return { error: "E-mail ou senha incorretos.", email: typed };
 
   await resetRateLimit(db, key);
