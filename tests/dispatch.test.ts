@@ -336,3 +336,27 @@ describe("descadastro e webhook do Resend", () => {
     await close();
   });
 });
+
+describe("links no domínio próprio", () => {
+  it("com APP_BASE_URL próprio, os botões passam por /r/<chave>; com vercel.app, ficam diretos", async () => {
+    const s = parseSettings({ supportEmail: "help@example.com" });
+    const mk = () => buildContext(s, { firstName: "John", timezone: null }, { type: "upsell", recoveryUrl: null }, new Date()).ctx;
+    const footer = { unsubscribeUrl: "https://x/u/1", postalAddress: "x" };
+    process.env.APP_BASE_URL = "https://emailmarketingbeto.vercel.app";
+    expect(renderEmail("upsell_1", mk(), footer).html).toContain('href="https://go.centerpag.com/PPU38CQFMSE"');
+    process.env.APP_BASE_URL = "https://funil.theabundancesequence.com";
+    const r = renderEmail("upsell_1", mk(), footer);
+    expect(r.html).toContain('href="https://funil.theabundancesequence.com/r/nathan67"');
+    expect(r.html).not.toContain("go.centerpag.com");
+    delete process.env.APP_BASE_URL;
+  });
+
+  it("a rota /r redireciona para o checkout certo", async () => {
+    const { GET } = await import("@/app/r/[key]/route");
+    const res = await GET(new Request("https://x/r/knots19"), { params: Promise.resolve({ key: "knots19" }) } as never);
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toBe("https://go.centerpag.com/PPU38CQFMS2");
+    const bad = await GET(new Request("https://x/r/nada"), { params: Promise.resolve({ key: "nada" }) } as never);
+    expect(bad.status).toBe(404);
+  });
+});

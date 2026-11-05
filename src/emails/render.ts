@@ -1,4 +1,5 @@
 import type { TemplateKey } from "@/lib/engine/types";
+import { redirectLink } from "./links";
 import { rec_a1, rec_a2, rec_b1, rec_b2, rec_f3 } from "./recovery";
 import type { Block, EmailContext, TemplateMap } from "./types";
 import { upsell_1, upsell_2, upsell_3, upsell_4, upsell_5, upsell_6, upsell_7 } from "./upsells";
@@ -78,7 +79,11 @@ function blockText(b: Block): string {
 }
 
 export function renderEmail(key: TemplateKey, ctx: EmailContext, footer: Footer): RenderedEmail {
-  const c = TEMPLATES[key](ctx);
+  const raw = TEMPLATES[key](ctx);
+  const c = {
+    ...raw,
+    blocks: raw.blocks.map((b) => (b.kind === "button" ? { ...b, href: redirectLink(b.href, ctx.linkBase ?? null) } : b)),
+  };
   const body = c.blocks.map(blockHtml).join("\n");
   const address = esc(footer.postalAddress).replace(/\n/g, "<br>");
   const html = `<!doctype html>

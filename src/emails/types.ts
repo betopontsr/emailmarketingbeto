@@ -20,6 +20,8 @@ export type EmailContext = {
   zoneAbbr: string;
   /** Link do checkout de $47 (recuperação da plataforma, se veio no webhook) */
   mainCheckoutUrl: string;
+  /** Se preenchido, os botões de checkout passam por <linkBase>/r/<chave> (domínio próprio). */
+  linkBase?: string | null;
   supportEmail: string;
   supportWhatsappUrl: string;
   opts: {

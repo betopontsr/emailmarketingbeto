@@ -4,6 +4,7 @@ import type { EmailContext } from "@/emails/types";
 import type { Settings } from "@/lib/settings";
 import { properCase } from "@/lib/util/names";
 import { formatDeadline, resolveZone, zoneAbbreviation } from "@/lib/util/time";
+import { baseUrl } from "@/lib/env";
 
 export const DEADLINE_HOURS = 48;
 
@@ -34,9 +35,25 @@ export function buildContext(s: Settings, customer: Pick<Customer, "firstName" |
     deadline: formatDeadline(deadlineAt, zone),
     zoneAbbr: zoneAbbreviation(now, zone),
     mainCheckoutUrl: flow.recoveryUrl || LINKS.main47,
+    linkBase: ownDomainBase(),
     supportEmail: s.supportEmail,
     supportWhatsappUrl: s.supportWhatsappUrl,
     opts: optsFrom(s),
   };
   return { ctx, deadlineAt, zone };
+}
+
+/**
+ * Só redireciona os botões pelo app quando ele tem um domínio próprio (APP_BASE_URL fora de *.vercel.app).
+ * Assim os links do e-mail ficam no mesmo domínio de quem envia.
+ */
+export function ownDomainBase(): string | null {
+  const base = baseUrl();
+  try {
+    const host = new URL(base).hostname;
+    if (host === "localhost" || host.endsWith(".vercel.app")) return null;
+    return base;
+  } catch {
+    return null;
+  }
 }
