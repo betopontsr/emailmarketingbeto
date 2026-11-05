@@ -42,3 +42,12 @@ describe("configurações", () => {
     delete process.env.EMAIL_FROM_ADDRESS;
   });
 });
+
+describe("remetente", () => {
+  it("recusa e-mail gratuito e aceita o domínio próprio", async () => {
+    const { fromAddressProblem } = await import("@/lib/settings");
+    expect(fromAddressProblem("nathan@mail.theabundancesequence.com")).toBeNull();
+    expect(fromAddressProblem("alguem@gmail.com")).toContain("DMARC");
+    expect(fromAddressProblem("sem-arroba")).not.toBeNull();
+  });
+});

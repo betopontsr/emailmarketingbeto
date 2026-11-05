@@ -80,7 +80,8 @@ describe("dispatcher", () => {
     const [b1] = await emails(db);
     expect(m.idempotencyKey).toBe(`scheduled-email/${b1.id}`);
     expect(m.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
-    expect(m.headers["List-Unsubscribe"]).toMatch(/^<http.*\/api\/unsubscribe\/\d+\./);
+    expect(m.headers["List-Unsubscribe"]).toMatch(/^<http.*\/api\/unsubscribe\/\d+\.[^>]+>, <mailto:help@example\.com\?subject=unsubscribe>$/);
+    expect(m.html).toContain("Unsubscribe");
     expect(m.tags).toContainEqual({ name: "template", value: "rec_b1" });
     expect(m.from).toBe("Nathan Miller <nathan@example.com>");
     expect(m.replyTo).toBe("help@example.com");

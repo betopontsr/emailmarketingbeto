@@ -9,5 +9,5 @@ import { baseUrl } from "@/lib/env";
 export function previewTemplate(key: TemplateKey, s: Settings, opts: { firstName?: string | null; flowB?: boolean } = {}) {
   const flowType = TEMPLATE_INFO[key].flow === "upsell" ? "upsell" : opts.flowB || key.startsWith("rec_b") ? "recovery_b" : "recovery_a";
   const { ctx } = buildContext(s, { firstName: opts.firstName === undefined ? "John" : opts.firstName, timezone: "America/New_York" }, { type: flowType, recoveryUrl: null }, new Date());
-  return renderEmail(key, ctx, { unsubscribeUrl: `${baseUrl()}/u/exemplo`, postalAddress: s.postalAddress || "[endereço postal não configurado]" });
+  return renderEmail(key, ctx, { unsubscribeUrl: `${baseUrl()}/u/teste`, postalAddress: s.postalAddress || "[endereço postal não configurado]" });
 }

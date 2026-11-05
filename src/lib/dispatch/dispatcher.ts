@@ -9,7 +9,7 @@ import type { OfferKey } from "@/lib/events/types";
 import { buildContext } from "@/lib/email/context";
 import type { Sender } from "@/lib/email/sender";
 import { tagValue } from "@/lib/email/sender";
-import { unsubscribeOneClickUrl, unsubscribePageUrl } from "@/lib/email/unsubscribe";
+import { unsubscribeHeaders, unsubscribeOneClickUrl, unsubscribePageUrl } from "@/lib/email/unsubscribe";
 import { addTimeline } from "@/lib/pipeline/ingest";
 import { completeFlowIfDone } from "@/lib/pipeline/handle";
 import { processOnly } from "@/lib/pipeline/run";
@@ -187,7 +187,7 @@ export async function processClaimed(db: Db, emailId: string, s: Settings, now: 
       subject: p.subject,
       html: p.html,
       text: p.text,
-      headers: { "List-Unsubscribe": `<${p.unsubUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
+      headers: unsubscribeHeaders(p.unsubUrl, s.emailReplyTo),
       tags: [
         { name: "scheduled_email_id", value: tagValue(p.emailId) },
         { name: "template", value: tagValue(p.templateKey) },

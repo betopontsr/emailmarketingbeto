@@ -109,9 +109,22 @@ export function isDryRun(s: Settings): boolean {
 export function missingRequiredConfig(s: Settings): string[] {
   const missing: string[] = [];
   if (!s.emailFromAddress) missing.push("remetente (EMAIL_FROM_ADDRESS)");
+  else {
+    const problem = fromAddressProblem(s.emailFromAddress);
+    if (problem) missing.push(`remetente inválido: ${problem}`);
+  }
   if (!s.postalAddress) missing.push("endereço postal (POSTAL_ADDRESS)");
   if (!s.supportEmail) missing.push("e-mail de suporte (SUPPORT_EMAIL)");
   if (!s.emailReplyTo) missing.push("reply-to (EMAIL_REPLY_TO)");
   if (!env().RESEND_API_KEY) missing.push("RESEND_API_KEY");
   return missing;
+}
+
+const FREE_MAIL = /@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|aol|bol|uol|terra)\.[a-z.]+$/i;
+
+/** Remetente precisa ser um e-mail do domínio verificado na Resend (nunca Gmail/Hotmail etc.: falha no DMARC). */
+export function fromAddressProblem(addr: string): string | null {
+  if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(addr)) return "não é um e-mail válido";
+  if (FREE_MAIL.test(addr)) return "e-mail gratuito (Gmail, Hotmail...) falha no DMARC; use o domínio verificado na Resend";
+  return null;
 }

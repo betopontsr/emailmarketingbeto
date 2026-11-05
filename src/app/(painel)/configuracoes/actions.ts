@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdminPage } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import { saveSettings, settingsSchema, type Settings } from "@/lib/settings";
+import { fromAddressProblem, saveSettings, settingsSchema, type Settings } from "@/lib/settings";
 import { isValidZone } from "@/lib/util/time";
 
 export type SettingsState = { error?: string; ok?: boolean };
@@ -31,6 +31,10 @@ export async function saveSettingsAction(_: SettingsState, fd: FormData): Promis
   if (!isValidZone(p.data.defaultTimezone)) return { error: "Fuso padrão inválido (use um nome IANA, ex.: America/New_York)." };
   for (const k of ["emailFromAddress", "emailReplyTo", "supportEmail"] as const) {
     if (p.data[k] && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.data[k])) return { error: `E-mail inválido em ${k}.` };
+  }
+  if (p.data.emailFromAddress) {
+    const problem = fromAddressProblem(p.data.emailFromAddress);
+    if (problem) return { error: `Remetente: ${problem}.` };
   }
   if (p.data.supportWhatsappUrl && !/^https:\/\//.test(p.data.supportWhatsappUrl)) return { error: "O link de WhatsApp deve começar com https://" };
   await saveSettings(getDb(), p.data);

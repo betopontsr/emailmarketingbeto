@@ -25,3 +25,16 @@ export function unsubscribePageUrl(customerId: number): string {
 export function unsubscribeOneClickUrl(customerId: number): string {
   return `${baseUrl()}/api/unsubscribe/${unsubscribeToken(customerId)}`;
 }
+
+/** Token usado só nos e-mails de teste do painel: o descadastro responde OK e não faz nada. */
+export const TEST_UNSUBSCRIBE_TOKEN = "teste";
+
+/**
+ * Cabeçalhos de descadastro exigidos pelo Gmail/Yahoo:
+ * link https de um clique (RFC 8058) + mailto para o reply-to, como alternativa.
+ */
+export function unsubscribeHeaders(oneClickUrl: string, replyTo: string | null | undefined): Record<string, string> {
+  const parts = [`<${oneClickUrl}>`];
+  if (replyTo && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(replyTo)) parts.push(`<mailto:${replyTo}?subject=unsubscribe>`);
+  return { "List-Unsubscribe": parts.join(", "), "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
+}

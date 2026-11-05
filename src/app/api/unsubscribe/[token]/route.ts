@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { verifyUnsubscribeToken } from "@/lib/email/unsubscribe";
+import { TEST_UNSUBSCRIBE_TOKEN, verifyUnsubscribeToken } from "@/lib/email/unsubscribe";
 import { suppressCustomer } from "@/lib/pipeline/suppress";
 import { clientIp, rateLimit } from "@/lib/util/rate-limit";
 
@@ -10,6 +10,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/unsubscribe/[to
   const { token } = await ctx.params;
   const db = getDb();
   if (!(await rateLimit(db, `unsub:${clientIp(req)}`, 30, 600))) return new Response("Too many requests", { status: 429 });
+  if (token === TEST_UNSUBSCRIBE_TOKEN) return new Response("Test email: nothing to unsubscribe", { status: 200 });
   const customerId = verifyUnsubscribeToken(token);
   if (!customerId) return new Response("Invalid link", { status: 400 });
   await db.transaction((tx) => suppressCustomer(tx, customerId, "descadastro pelo link"));

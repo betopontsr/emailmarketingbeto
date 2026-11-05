@@ -7,7 +7,9 @@ import { env } from "@/lib/env";
 import { previewTemplate } from "@/lib/email/preview";
 import { resendSender } from "@/lib/email/sender";
 import { TEMPLATE_KEYS } from "@/lib/engine/types";
-import { getSettings } from "@/lib/settings";
+import { fromAddressProblem, getSettings } from "@/lib/settings";
+import { baseUrl } from "@/lib/env";
+import { TEST_UNSUBSCRIBE_TOKEN, unsubscribeHeaders } from "@/lib/email/unsubscribe";
 
 export type TestState = { error?: string; ok?: string };
 
@@ -19,6 +21,8 @@ export async function sendTestAction(_: TestState, fd: FormData): Promise<TestSt
   const to = env().TEST_EMAIL_TO || admin.email;
   if (!env().RESEND_API_KEY) return { error: "RESEND_API_KEY não configurada." };
   if (!s.emailFromAddress) return { error: "Configure o e-mail do remetente primeiro." };
+  const problem = fromAddressProblem(s.emailFromAddress);
+  if (problem) return { error: `Remetente inválido: ${problem}.` };
   const r = previewTemplate(key, s, { flowB: fd.get("flowB") === "1" });
   const res = await resendSender().send({
     from: `${s.emailFromName} <${s.emailFromAddress}>`,
@@ -27,7 +31,8 @@ export async function sendTestAction(_: TestState, fd: FormData): Promise<TestSt
     subject: `[TESTE] ${r.subject}`,
     html: r.html,
     text: r.text,
-    headers: {},
+    // Mesmos cabeçalhos de descadastro dos envios reais (o link de teste não descadastra ninguém).
+    headers: unsubscribeHeaders(`${baseUrl()}/api/unsubscribe/${TEST_UNSUBSCRIBE_TOKEN}`, s.emailReplyTo),
     tags: [{ name: "template", value: key }, { name: "test", value: "1" }],
     idempotencyKey: `test/${key}/${Date.now()}`,
   });

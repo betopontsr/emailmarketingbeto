@@ -1,4 +1,4 @@
-import { verifyUnsubscribeToken } from "@/lib/email/unsubscribe";
+import { TEST_UNSUBSCRIBE_TOKEN, verifyUnsubscribeToken } from "@/lib/email/unsubscribe";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,9 @@ export default async function UnsubscribePage(props: PageProps<"/u/[token]">) {
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4 rounded-lg border p-6 text-center">
-        {!valid ? (
+        {token === TEST_UNSUBSCRIBE_TOKEN ? (
+          <p className="text-sm">This is a test email. There is nothing to unsubscribe.</p>
+        ) : !valid ? (
           <p className="text-sm">This link is not valid. If you want to stop receiving emails, just reply to any email and ask us.</p>
         ) : done ? (
           <>
