@@ -46,6 +46,26 @@ describe("adaptador Perfect Pay (hipotético)", () => {
   });
 });
 
+describe("adaptador Perfect Pay (payload REAL)", () => {
+  it("compra aprovada real do principal", async () => {
+    const r = adaptPerfectPay(fx("real-aprovada-main"));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.event).toMatchObject({
+      type: "purchase_approved",
+      transactionId: "PPCPMTB5HN02FDGT8U",
+      amount: 43.72,
+      currency: "USD",
+      product: { code: "PPPBFBLH", planCode: "PPLQQQBNF" },
+      customer: { email: "cliente@example.com", firstName: "Jane", country: "GB", phone: "+447000000000", timezone: "Europe/London" },
+    });
+    const { db, close } = await createTestDb();
+    const out = await receiveAndProcess(db, { provider: "perfectpay", raw: fx("real-aprovada-main") });
+    expect(out.status).toBe("processed"); // mapeado pela migration 0002 (PPPBFBLH → principal)
+    await close();
+  });
+});
+
 describe("mapeamento de produtos", () => {
   const maps = [
     { productKey: "main", matchType: "code", value: "PPU38CQFMQH" },

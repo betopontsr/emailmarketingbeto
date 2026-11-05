@@ -11,7 +11,7 @@ import { customerDetail, emailHtml } from "@/lib/queries/customer-detail";
 import { recordResendEvent } from "@/lib/email/events";
 import type { Filters } from "@/lib/queries/common";
 
-const now = new Date();
+const now = new Date("2026-11-04T17:00:00Z"); // meio-dia em Nova York: fora da janela de silêncio
 const f: Filters = { from: new Date(now.getTime() - 30 * 864e5), to: new Date(now.getTime() + 60 * 864e5), fromStr: "", toStr: "", includeTest: true };
 const sender = () => ({ send: async () => ({ ok: true as const, id: "x" }) });
 

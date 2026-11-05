@@ -1,6 +1,7 @@
 /**
- * Fuso a partir do país/estado. Só cobre EUA (fuso principal de cada estado);
- * fora dos EUA ou sem estado, devolve null e o app usa o fuso padrão (America/New_York).
+ * Fuso a partir do país/estado. EUA: fuso principal de cada estado.
+ * Outros países: só os que têm um fuso único (ou claramente dominante).
+ * Sem correspondência, devolve null e o app usa o fuso padrão (America/New_York).
  */
 const US_STATE_ZONES: Record<string, string> = {
   AL: "America/Chicago", AK: "America/Anchorage", AZ: "America/Phoenix", AR: "America/Chicago",
@@ -18,8 +19,19 @@ const US_STATE_ZONES: Record<string, string> = {
   WV: "America/New_York", WI: "America/Chicago", WY: "America/Denver", PR: "America/Puerto_Rico",
 };
 
+const COUNTRY_ZONES: Record<string, string> = {
+  GB: "Europe/London", UK: "Europe/London", IE: "Europe/Dublin", PT: "Europe/Lisbon", ES: "Europe/Madrid",
+  FR: "Europe/Paris", DE: "Europe/Berlin", IT: "Europe/Rome", NL: "Europe/Amsterdam", BE: "Europe/Brussels",
+  CH: "Europe/Zurich", AT: "Europe/Vienna", SE: "Europe/Stockholm", NO: "Europe/Oslo", DK: "Europe/Copenhagen",
+  FI: "Europe/Helsinki", PL: "Europe/Warsaw", GR: "Europe/Athens", ZA: "Africa/Johannesburg", NZ: "Pacific/Auckland",
+  PH: "Asia/Manila", SG: "Asia/Singapore", IN: "Asia/Kolkata", JP: "Asia/Tokyo", IL: "Asia/Jerusalem",
+  AE: "Asia/Dubai", CO: "America/Bogota", PE: "America/Lima", AR: "America/Argentina/Buenos_Aires",
+  CL: "America/Santiago", PR: "America/Puerto_Rico", JM: "America/Jamaica", TT: "America/Port_of_Spain",
+  BR: "America/Sao_Paulo", MX: "America/Mexico_City",
+};
+
 export function zoneFromLocation(country: string | null | undefined, region: string | null | undefined): string | null {
   const c = (country ?? "").toUpperCase();
-  if (!["US", "USA", "UNITED STATES"].includes(c)) return null;
-  return US_STATE_ZONES[(region ?? "").toUpperCase()] ?? null;
+  if (["US", "USA", "UNITED STATES"].includes(c)) return US_STATE_ZONES[(region ?? "").toUpperCase()] ?? null;
+  return COUNTRY_ZONES[c] ?? null;
 }

@@ -1,0 +1,32 @@
+{
+  "code": "PPCPMTB5HN02FDGT8U",
+  "plan": { "code": "PPLQQQBNF", "name": "47 OFFER", "quantity": 1, "tax_code": null, "offer_name": null },
+  "token": "token-removido",
+  "product": { "code": "PPPBFBLH", "name": "The 11:22 Abundance Sequence *", "guarantee": 7, "external_reference": null },
+  "customer": {
+    "ip": "0.0.0.0", "city": "", "email": "cliente@example.com", "state": "", "country": "GB", "birthday": null,
+    "district": "", "language": "en", "zip_code": "", "full_name": "Jane Doe", "complement": "", "date_birth": null,
+    "street_name": "", "phone_number": "7000000000", "street_number": "", "phone_formated": "447000000000",
+    "phone_area_code": "44", "phone_extension": "44", "customer_type_enum": 1, "phone_formated_ddi": "+447000000000",
+    "identification_type": "NA", "identification_number": "cliente@example.com", "customer_type_enum_key": "percent"
+  },
+  "metadata": { "ref": "PPA25QDF", "utm_term": "Instagram_Reels" },
+  "quantity": 1,
+  "billet_url": "",
+  "commission": [{ "name": "Produtor", "currency_enum": 2, "commission_amount": 38.77, "currency_enum_key": "USD", "affiliation_type_enum": 1 }],
+  "plan_itens": [],
+  "coupon_code": null,
+  "sale_amount": 43.72,
+  "date_created": "2026-11-04 23:04:27",
+  "installments": 1,
+  "currency_enum": 2,
+  "date_approved": "2026-11-04 23:04:27",
+  "webhook_owner": "PPA25QDF",
+  "sale_status_enum": 2,
+  "currency_enum_key": "USD",
+  "payment_type_enum": 15,
+  "checkout_type_enum": "regular",
+  "sale_status_detail": "approved",
+  "sale_status_enum_key": "approved",
+  "payment_type_enum_key": "stripe_link"
+}

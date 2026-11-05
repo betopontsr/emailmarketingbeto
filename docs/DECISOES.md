@@ -78,3 +78,12 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 51. **CSV:** células que começam com `=`, `+`, `-` ou `@` ganham um apóstrofo, para não virarem fórmula no Excel ou no Sheets.
 52. **Apagar dados de teste** remove só clientes `is_test` e os eventos do simulador. Nunca toca em clientes reais.
 53. **Fuso pelo estado** passou a ser deduzido no cadastro do cliente (vale para webhook e simulador), não só no adaptador.
+
+## Primeiro payload real da Perfect Pay (05/11/2026)
+
+54. **Confirmado:** `code` (transação), `sale_status_enum` 2 = aprovada, `product.code` (PPPB…), `plan.code` (PPLQ…), `customer.*`, `sale_amount`, `currency_enum_key`, `date_approved` (sem fuso). Fixture: `tests/fixtures/perfectpay/real-aprovada-main.json` (dados pessoais trocados).
+55. **Códigos dos produtos:** os códigos PPU dos links não vêm no webhook. A migration `0002` cadastra `PPPBFBLH` → principal e `PPPBFBLS` → Nathan (tipo “código do produto”, que cobre todos os preços). Knots e Reclaim: falta descobrir o código PPPB.
+56. **Moeda:** lida de `currency_enum_key`. **Telefone:** de `customer.phone_formated_ddi`.
+57. **Fuso por país:** clientes de fora dos EUA (ex.: GB) passaram a ter o fuso do país quando o país tem um fuso só, em vez de Nova York.
+58. **`sale_amount`** (ex.: 43,72 numa oferta de $47) é o que entra como receita. Pode ser o valor líquido de taxas; a confirmar.
+59. **A confirmar:** os horários sem fuso (“2026-11-04 23:04:27”) continuam tratados como horário de São Paulo.

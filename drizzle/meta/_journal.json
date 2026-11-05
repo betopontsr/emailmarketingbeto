@@ -15,6 +15,13 @@
       "when": 1793817013837,
       "tag": "0001_seed_product_mappings",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793848410060,
+      "tag": "0002_map_perfectpay_product_codes",
+      "breakpoints": true
     }
   ]
 }

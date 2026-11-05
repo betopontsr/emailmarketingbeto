@@ -9,7 +9,7 @@ import { customers, webhookEvents } from "@/lib/db/schema";
 import { EVENT_TYPE_LABELS, PRODUCT_SHORT, type EventType, type ProductKey } from "@/lib/events/types";
 import { one } from "@/lib/queries/common";
 import { formatBr } from "@/lib/util/time";
-import { reprocessAction } from "./actions";
+import { reprocessAction, reprocessUnmappedAction } from "./actions";
 
 export default async function Eventos(props: PageProps<"/eventos">) {
   const sp = await props.searchParams;
@@ -28,7 +28,15 @@ export default async function Eventos(props: PageProps<"/eventos">) {
   const counts = await db.select({ s: webhookEvents.status, c: sql<number>`count(*)::int` }).from(webhookEvents).groupBy(webhookEvents.status);
   return (
     <div>
-      <PageHeader title="Eventos (webhooks)" description="Todo payload recebido fica gravado antes de ser processado." />
+      <PageHeader title="Eventos (webhooks)" description="Todo payload recebido fica gravado antes de ser processado.">
+        {(counts.find((c) => c.s === "unmapped")?.c ?? 0) > 0 && (
+          <form action={reprocessUnmappedAction}>
+            <Button size="sm" variant="outline">
+              Reprocessar todos os não mapeados ({counts.find((c) => c.s === "unmapped")?.c})
+            </Button>
+          </form>
+        )}
+      </PageHeader>
       <form method="get" className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border p-3">
         <div className="space-y-1">
           <Label htmlFor="status">Status</Label>

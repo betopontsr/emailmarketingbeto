@@ -1,9 +1,13 @@
 /**
  * Adaptador da Perfect Pay: converte o payload bruto num NormalizedEvent.
  *
- * ATENÇÃO: os nomes de campo abaixo são HIPÓTESES baseadas no formato público
- * conhecido do postback da Perfect Pay (sale_status_enum, customer.email, product.code...).
- * Eles ainda não foram confirmados com payloads reais deste funil.
+ * Campos CONFIRMADOS com payload real de compra aprovada (05/11/2026, tests/fixtures/perfectpay/real-aprovada-main.json):
+ * code, sale_status_enum (2) / sale_status_enum_key ("approved"), sale_status_detail, date_approved,
+ * date_created ("2026-11-04 23:04:27", sem fuso), sale_amount, currency_enum_key ("USD"),
+ * product.code (PPPB...), product.name, plan.code (PPLQ...), customer.email, customer.full_name,
+ * customer.country, customer.state, customer.phone_formated_ddi, token.
+ * Ainda HIPÓTESE (falta payload real): os outros números de status (abandono, recusa, reembolso,
+ * chargeback) e o texto do motivo da recusa.
  * Quando você colar payloads reais, ajuste SÓ este arquivo e os fixtures em
  * tests/fixtures/perfectpay/.
  *
@@ -114,7 +118,8 @@ function amount(v: unknown): number | null {
 }
 
 function currency(raw: Obj): string | null {
-  const c = str(pick(raw, "currency", "currency_code", "sale_currency"));
+  // Confirmado em payload real: "currency_enum_key": "USD"
+  const c = str(pick(raw, "currency_enum_key", "currency", "currency_code", "sale_currency"));
   if (c && /^[A-Za-z]{3}$/.test(c)) return c.toUpperCase();
   return null; // currency_enum numérico: significado não confirmado, não adivinhamos
 }
@@ -160,7 +165,8 @@ export function adaptPerfectPay(input: unknown, receivedAt = new Date()): AdaptR
   const region = str(pick(raw, "customer.state", "customer.address.state", "state"))?.toUpperCase() ?? null;
   const areaCode = str(pick(raw, "customer.phone_area_code"));
   const phoneNum = str(pick(raw, "customer.phone_number", "customer.phone", "phone"));
-  const phone = phoneNum ? [areaCode, phoneNum].filter(Boolean).join(" ") : null;
+  // Confirmado em payload real: "phone_formated_ddi": "+44..."
+  const phone = str(pick(raw, "customer.phone_formated_ddi")) ?? (phoneNum ? [areaCode, phoneNum].filter(Boolean).join(" ") : null);
   const tzField = str(pick(raw, "customer.timezone", "timezone"));
 
   const candidate = {
