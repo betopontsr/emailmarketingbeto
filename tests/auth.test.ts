@@ -32,3 +32,13 @@ describe("migrations", () => {
     await close();
   });
 });
+
+describe("configurações", () => {
+  it("campo vazio salvo no painel não apaga a variável de ambiente", async () => {
+    const { parseSettings } = await import("@/lib/settings");
+    process.env.EMAIL_FROM_ADDRESS = "nathan@mail.example.com";
+    expect(parseSettings({ emailFromAddress: "" }).emailFromAddress).toBe("nathan@mail.example.com");
+    expect(parseSettings({ emailFromAddress: "outro@example.com" }).emailFromAddress).toBe("outro@example.com");
+    delete process.env.EMAIL_FROM_ADDRESS;
+  });
+});

@@ -59,7 +59,13 @@ function envDefaults(): Partial<Settings> {
 }
 
 export function parseSettings(stored: Record<string, unknown>): Settings {
-  const merged = { ...envDefaults(), ...stored };
+  // Campo de texto salvo vazio no painel não apaga o valor da variável de ambiente.
+  const env = envDefaults();
+  const merged: Record<string, unknown> = { ...env };
+  for (const [k, v] of Object.entries(stored)) {
+    if (typeof v === "string" && v.trim() === "" && k in env) continue;
+    merged[k] = v;
+  }
   // Valores inválidos no banco não derrubam o app: volta ao padrão campo a campo.
   const out: Record<string, unknown> = {};
   const shape = settingsSchema.shape;
