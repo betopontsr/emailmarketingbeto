@@ -263,8 +263,8 @@ describe("templates", () => {
     expect(u4.text).toContain("30-day guarantee");
     expect(u1.text + u4.text).not.toContain("60");
     expect(u1.subject).toBe("[11:22] did you close the page by accident?");
-    // P.S. de escassez ligado por padrão
-    expect(u1.text).toContain("P.S. I limit how many people I support directly");
+    // P.S. de escassez (vagas) desligado por decisão do dono
+    expect(u1.text).not.toContain("P.S. I limit how many people I support directly");
   });
 
   it("trechos opcionais respeitam as configurações", () => {

@@ -82,8 +82,10 @@ Quando algo estava ambíguo ou faltava, escolhi o comportamento mais seguro (nã
 ## Primeiro payload real da Perfect Pay (05/11/2026)
 
 54. **Confirmado:** `code` (transação), `sale_status_enum` 2 = aprovada, `product.code` (PPPB…), `plan.code` (PPLQ…), `customer.*`, `sale_amount`, `currency_enum_key`, `date_approved` (sem fuso). Fixture: `tests/fixtures/perfectpay/real-aprovada-main.json` (dados pessoais trocados).
-55. **Códigos dos produtos:** os códigos PPU dos links não vêm no webhook. A migration `0002` cadastra `PPPBFBLH` → principal e `PPPBFBLS` → Nathan (tipo “código do produto”, que cobre todos os preços). Knots e Reclaim: falta descobrir o código PPPB.
+55. **Códigos dos produtos:** os códigos PPU dos links não vêm no webhook. A migration `0002` cadastra `PPPBFBLH` → principal e `PPPBFBLS` → Nathan (tipo “código do produto”, que cobre todos os preços). Knots (`PPPBFBLP`) e Reclaim (`PPPBFBLR`) foram cadastrados pela migration `0003`.
 56. **Moeda:** lida de `currency_enum_key`. **Telefone:** de `customer.phone_formated_ddi`.
 57. **Fuso por país:** clientes de fora dos EUA (ex.: GB) passaram a ter o fuso do país quando o país tem um fuso só, em vez de Nova York.
 58. **`sale_amount`** (ex.: 43,72 numa oferta de $47) é o que entra como receita. Pode ser o valor líquido de taxas; a confirmar.
 59. **A confirmar:** os horários sem fuso (“2026-11-04 23:04:27”) continuam tratados como horário de São Paulo.
+60. **Vagas (mudança do dono em 05/11/2026):** a frase das vagas não deve ser usada. A migration `0003` desliga o P.S. de escassez do upsell_1 (e o padrão passou a ser desligado). Isso substitui a decisão 2.
+61. **Prazos dos preços reduzidos:** o dono informou que os links de preço reduzido NÃO expiram na Perfect Pay, mas quer manter o texto de urgência (48 h / meia-noite). O texto dos e-mails ficou como no anexo. Risco registrado: prazo que não acontece de verdade pode ser considerado prática enganosa nos EUA (FTC) e o anexo de Upsells também avisa que “prazo falso derruba a confiança”. Recomendação: fazer o link expirar na Perfect Pay, se der.

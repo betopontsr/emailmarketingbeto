@@ -27,7 +27,7 @@ export const settingsSchema = z.object({
   dryRun: z.boolean().default(true),
 
   // Trechos opcionais (seção 8 do prompt)
-  upsell1ScarcityEnabled: z.boolean().default(true),
+  upsell1ScarcityEnabled: z.boolean().default(false),
   upsell1ScarcityText: z
     .string()
     .default("I limit how many people I support directly, so I can really answer every one of you."),

@@ -25,10 +25,12 @@ describe("limite de tentativas", () => {
 });
 
 describe("migrations", () => {
-  it("pré-cadastram os 8 códigos PPU e os 2 códigos reais da Perfect Pay", async () => {
+  it("pré-cadastram os 8 códigos PPU e os 4 códigos reais da Perfect Pay", async () => {
     const { db, close } = await createTestDb();
     const rows = await db.query.productMappings.findMany();
-    expect(rows).toHaveLength(10);
+    expect(rows).toHaveLength(12);
+    const { getSettings } = await import("@/lib/settings");
+    expect((await getSettings(db)).upsell1ScarcityEnabled).toBe(false);
     await close();
   });
 });
